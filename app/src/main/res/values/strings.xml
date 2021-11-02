@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">android_weather</string>
+    <string name="error_message">Error</string>
 </resources>
