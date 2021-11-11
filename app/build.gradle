@@ -72,6 +72,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // FUSED LOCATION PROVIDER
     implementation "com.google.android.gms:play-services-location:17.1.0"
