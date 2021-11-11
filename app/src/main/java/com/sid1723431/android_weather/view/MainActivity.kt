@@ -5,11 +5,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
-
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -17,8 +18,11 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.sid1723431.android_weather.R
@@ -27,14 +31,14 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import java.util.jar.Manifest
+
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
-        const val PERMISSION_LOCATION_REQUEST_CODE = 1
+        const val PERMISSION_LOCATION_REQUEST_CODE = 101
     }
 
     private lateinit var viewmodel: MainViewModel
@@ -56,14 +60,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         btn_get_location.setOnClickListener{
-           fetchLocation()
+            fetchLocation()
             //requestLocationPermission()
 
             /*
-
             if (fusedLocationProviderClient.lastLocation
              != null){
-
             }
             if (hasLocationPermission(this)) {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location : Location ->
@@ -79,9 +81,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             } else {
                 requestLocationPermission()
             }
-
             */
         }
+
+
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
@@ -118,35 +121,77 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
     private fun fetchLocation() {
+        /*
         val task: Task<Location> = fusedLocationProviderClient.getCurrentLocation(PRIORITY_HIGH_ACCURACY,
             null)
+         */
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
         ){
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
             return
         }
+        /*
         task.addOnSuccessListener{
-        if(it != null){
-            //Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_LONG).show()
-            //Log.i(TAG, "TAG: ${it.latitude} ${it.longitude}" )
-            //tv_lat.text = it.latitude.toString()
-           // tv_long.text = it.longitude.toString()
-            it.latitude = lat
-            it.longitude = long
-            tv_lat.text = lat.toString()
-            tv_long.text = long.toString()
+            if(it != null){
+                //Log.i(TAG, "TAG: ${it.latitude} ${it.longitude}" )
+                tv_lat.text = it.latitude.toString()
+                tv_long.text = it.longitude.toString()
+                //it.latitude = lat
+               // it.longitude = long
+                //tv_lat.text = lat.toString()
+               // tv_long.text = long.toString()
 
-            Log.i(TAG, lat.toString() + long.toString())
+                Log.i(TAG, lat.toString() + long.toString())
 
-        }else{
-            tv_lat.text = "it's not working"
+            }else{
+                tv_lat.text = "it's not working"
+            }
         }
-        }
+
+         */
+
+        var locationRequest = LocationRequest()
+        locationRequest.interval = 10000
+        locationRequest.fastestInterval = 5000
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        val geocoder = Geocoder(this, Locale.getDefault())
+        var address:List<Address>
+
+
+        LocationServices.getFusedLocationProviderClient(this@MainActivity)
+            .requestLocationUpdates(locationRequest,object : LocationCallback(){
+                override fun onLocationResult(locationResult: LocationResult?) {
+                    super.onLocationResult(locationResult)
+                    LocationServices.getFusedLocationProviderClient(this@MainActivity)
+                        .removeLocationUpdates(this)
+                    if (locationResult != null && locationResult.locations.size > 0){
+                        var locIndex = locationResult.locations.size-1
+
+                        var latitude = locationResult.locations.get(locIndex).latitude
+                        var longitude = locationResult.locations.get(locIndex).longitude
+                        tv_lat.text = "Latitude: "+latitude
+                        tv_long.text = "Longitude: "+longitude
+
+                        address = geocoder.getFromLocation(latitude,longitude,1)
+
+                        var city =   address[0].locality
+
+                        //var address:String = address[0].getAddressLine(0)
+
+                        tv_city.text = city.toString()
+
+                    }
+                }
+            }, Looper.getMainLooper())
 
     }
 
     private fun displayCurrentCity(){
+
+
+
 
     }
 
