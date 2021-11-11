@@ -90,6 +90,15 @@
                     android:text="Get location"
                     />
 
+                <Button
+                    android:id="@+id/btn_get_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Get city"
+                    />
+
+
+
                 <TextView
                     android:id="@+id/tv_current_location"
                     android:layout_width="wrap_content"
@@ -110,12 +119,23 @@
                     android:text="LONG"
                     android:textSize="12sp"/>
 
+
+
+                <TextView
+                    android:id="@+id/tv_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CITY"/>
+
+
                 <TextView
                     android:id="@+id/tv_degree"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textSize="65sp" />
+
+
 
 
                 <LinearLayout
