@@ -90,14 +90,6 @@
                     android:text="Get location"
                     />
 
-                <Button
-                    android:id="@+id/btn_get_city"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Get city"
-                    />
-
-
 
                 <TextView
                     android:id="@+id/tv_current_location"
@@ -120,12 +112,11 @@
                     android:textSize="12sp"/>
 
 
-
                 <TextView
-                    android:id="@+id/tv_city"
+                    android:id="@+id/tv_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="CITY"/>
+                    android:text="ADDRESS"/>
 
 
                 <TextView
