@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
@@ -19,12 +18,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.Task
 import com.sid1723431.android_weather.R
 import com.sid1723431.android_weather.viewmodel.MainViewModel
 import com.vmadalin.easypermissions.EasyPermissions
@@ -46,8 +43,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
 
-    var lat: Double = 0.0
-    var long: Double = 0.0
+    lateinit var use_city: String
+
 
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -61,29 +58,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         btn_get_location.setOnClickListener{
             fetchLocation()
-            //requestLocationPermission()
-
-            /*
-            if (fusedLocationProviderClient.lastLocation
-             != null){
-            }
-            if (hasLocationPermission(this)) {
-                fusedLocationProviderClient.lastLocation.addOnSuccessListener { location : Location ->
-                    val geoCoder = Geocoder(this)
-                    val currentLocation = geoCoder.getFromLocation(
-                        location.latitude,
-                        location.longitude,
-                        1
-                    )
-                    Log.d("TAG", currentLocation.first().countryCode)
-                    Log.d("TAG", currentLocation.first().subLocality)
-                }
-            } else {
-                requestLocationPermission()
-            }
-            */
         }
-
 
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
@@ -103,6 +78,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             pb_loading.visibility = View.GONE
 
             var cityName = GET.getString("cityName", cName)?.lowercase()
+
             edt_city_name.setText(cityName)
             viewmodel.refreshData(cityName!!)
             swipe_refresh_layout.isRefreshing = false
@@ -121,35 +97,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
     private fun fetchLocation() {
-        /*
-        val task: Task<Location> = fusedLocationProviderClient.getCurrentLocation(PRIORITY_HIGH_ACCURACY,
-            null)
-         */
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
         ){
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
             return
         }
-        /*
-        task.addOnSuccessListener{
-            if(it != null){
-                //Log.i(TAG, "TAG: ${it.latitude} ${it.longitude}" )
-                tv_lat.text = it.latitude.toString()
-                tv_long.text = it.longitude.toString()
-                //it.latitude = lat
-               // it.longitude = long
-                //tv_lat.text = lat.toString()
-               // tv_long.text = long.toString()
-
-                Log.i(TAG, lat.toString() + long.toString())
-
-            }else{
-                tv_lat.text = "it's not working"
-            }
-        }
-
-         */
 
         var locationRequest = LocationRequest()
         locationRequest.interval = 10000
@@ -176,41 +129,44 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                         address = geocoder.getFromLocation(latitude,longitude,1)
 
-                        var city =   address[0].locality
+
+
+                        var cityName = address[0].locality
+
+                        var city1 = address[0].adminArea
 
                         //var address:String = address[0].getAddressLine(0)
 
-                        tv_city.text = city.toString()
+                        var address:String = address[0].getAddressLine(0)
+
+                        if (address == null){
+                            tv_address.text = "Can't find address"
+                        }else{
+                            tv_address.text = address
+                        }
+
+
+
+                     Toast.makeText(applicationContext, "City: ${cityName}", Toast.LENGTH_LONG).show()
+
+                        if (cityName != null){
+                            tv_city_code.text = cityName
+                            edt_city_name.setText(cityName)
+                            viewmodel.refreshData(cityName!!)
+                            getLiveData()
+                        }else{
+                            tv_city_code.text = city1
+                            edt_city_name.setText(city1)
+                            viewmodel.refreshData(city1!!)
+                            getLiveData()
+                        }
 
                     }
+
                 }
             }, Looper.getMainLooper())
 
     }
-
-    private fun displayCurrentCity(){
-
-
-
-
-    }
-
-    private fun getCityName(lat: Double,long: Double):String{
-        var currentCity:String = ""
-        var countryName = ""
-        var geoCoder = Geocoder(this, Locale.getDefault())
-        var address = geoCoder.getFromLocation(lat,long,3)
-
-        currentCity = address.get(0).locality
-        countryName = address.get(0).countryName
-        Log.d("Debug:","Your City: " + currentCity + " ; your Country " + countryName)
-
-        return currentCity
-    }
-
-
-
-
 
 
     private fun hasLocationPermission(context: Context) =
