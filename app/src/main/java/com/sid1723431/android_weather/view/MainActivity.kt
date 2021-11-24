@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
 
-    lateinit var use_city: String
 
 
 
@@ -59,6 +58,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         btn_get_location.setOnClickListener{
             fetchLocation()
         }
+        requestLocationPermission()
 
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         viewmodel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        var cName = GET.getString("cityName", "peterborough")?.lowercase()
+        var cName = GET.getString("cityName", "peterborough, UK")?.lowercase()
         edt_city_name.setText(cName)
         viewmodel.refreshData(cName!!)
 
@@ -121,7 +121,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         .removeLocationUpdates(this)
                     if (locationResult != null && locationResult.locations.size > 0){
                         var locIndex = locationResult.locations.size-1
-
                         var latitude = locationResult.locations.get(locIndex).latitude
                         var longitude = locationResult.locations.get(locIndex).longitude
                         tv_lat.text = "Latitude: "+latitude
@@ -134,6 +133,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         var cityName = address[0].locality
 
                         var city1 = address[0].adminArea
+
+                        var country = address[0].countryCode
 
                         //var address:String = address[0].getAddressLine(0)
 
@@ -156,8 +157,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                             getLiveData()
                         }else{
                             tv_city_code.text = city1
-                            edt_city_name.setText(city1)
-                            viewmodel.refreshData(city1!!)
+                            edt_city_name.setText(city1 + ", " + country)
+                            viewmodel.refreshData(city1+ ", " + country!!)
                             getLiveData()
                         }
 

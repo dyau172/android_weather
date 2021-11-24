@@ -21,20 +21,7 @@ android {
         setProperty("archivesBaseName", applicationId + "-v" + versionCode + "(" + versionName + ")")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    //flavorDimensions "default"
-    /*
-    productFlavors {
-        development {
-            buildConfigField "String", 'BASE_URL', BASE_URL
-            buildConfigField "String", 'API_KEY', API_KEY
-        }
-        production {
-            buildConfigField "String", 'BASE_URL', BASE_URL
-            buildConfigField "String", 'API_KEY', API_KEY
-        }
-    }
 
-     */
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
@@ -80,10 +67,8 @@ dependencies {
     // EASY PERMISSIONS KTX
     implementation 'com.vmadalin:easypermissions-ktx:0.1.0'
 
-
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-
 
     // RXJAVA
     implementation "io.reactivex.rxjava2:rxjava:2.1.1"

@@ -21,6 +21,9 @@ class MainViewModel : ViewModel() {
     val weather_error = MutableLiveData<Boolean>()
     val weather_loading = MutableLiveData<Boolean>()
 
+
+
+
     fun refreshData(cityName: String) {
         getDataFromAPI(cityName)
     }
