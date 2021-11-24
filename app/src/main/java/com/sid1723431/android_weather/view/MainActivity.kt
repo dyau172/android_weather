@@ -132,7 +132,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                         var cityName = address[0].locality
 
-                        var city1 = address[0].adminArea
+                        var subAdminArea = address[0].subAdminArea
+
+                        var adminArea = address[0].adminArea
 
                         var country = address[0].countryCode
 
@@ -155,11 +157,17 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                             edt_city_name.setText(cityName)
                             viewmodel.refreshData(cityName!!)
                             getLiveData()
-                        }else{
-                            tv_city_code.text = city1
-                            edt_city_name.setText(city1 + ", " + country)
-                            viewmodel.refreshData(city1+ ", " + country!!)
+                        }else if (subAdminArea != null) {
+                            tv_city_code.text = subAdminArea
+                            edt_city_name.setText(subAdminArea + ", " + country)
+                            viewmodel.refreshData(subAdminArea+ ", " + country!!)
                             getLiveData()
+                        }else{
+                            tv_city_code.text = adminArea
+                            edt_city_name.setText(adminArea  + ", " + country)
+                            viewmodel.refreshData(adminArea  + ", " + country!!)
+                            getLiveData()
+
                         }
 
                     }
